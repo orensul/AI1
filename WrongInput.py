@@ -1,0 +1,2 @@
+class WrongInput(Exception):
+    pass

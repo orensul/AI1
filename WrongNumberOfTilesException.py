@@ -1,0 +1,2 @@
+class WrongNumberOfTilesException(Exception):
+    pass

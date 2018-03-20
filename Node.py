@@ -1,21 +1,23 @@
 from PieceTile import PieceTile
-
+from TileEnum import TileEnum
 
 class Node:
     def __init__(self, board):
         self._whites_loc = []
         self._blacks_loc = []
         self._children = []
-        for row in board:
-            for tile in row:
-                if isinstance(tile, PieceTile):
-                    if tile.get_color() == PieceTile.WHITE_COLOR:
-                        self._whites_loc.append(tile.get_location())
-                    else:
-                        self._blacks_loc.append(tile.get_location())
+        for i in range(len(board)):
+            for j in range(len(board)):
+                if board[i][j] == TileEnum.WHITE_PIECE:
+                    self._whites_loc.append((i, j))
+                elif board[i][j] == TileEnum.BLACK_PIECE:
+                    self._blacks_loc.append((i, j))
 
     def set_child(self, child_node):
         self._children.append(child_node)
+
+    def get_children(self):
+        return self._children
 
     def get_node(self):
         tup = (0, 0)
@@ -24,12 +26,11 @@ class Node:
         return tup
 
     def __str__(self):
-        message = ''
-        print("Node white pieces location:")
+        message = 'Node white pieces location: '
         for loc in self._whites_loc:
             message += '(' + str(loc[0]) + ', ' + str(loc[1]) + '), '
         message = message[:-2]
-        message += '\nNode black pieces location: \n'
+        message += ' Node black pieces location: '
         for loc in self._blacks_loc:
             message += '(' + str(loc[0]) + ', ' + str(loc[1]) + '), '
         message = message[:-2]

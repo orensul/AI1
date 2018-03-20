@@ -88,8 +88,16 @@ def build_search_tree():
             if board[i][j] == TileEnum.WHITE_PIECE:
                 count, legal_new_pos = count_legal_moves_pos((i, j))
                 for new_pos in legal_new_pos:
-                    create_child((i, j), new_pos)
+                    node.set_child(create_child((i, j), new_pos))
 
+    print("root node: ")
+    print(node)
+    print("children: ")
+    count_moves = 1
+    for c in node.get_children():
+        print(str(count_moves))
+        print(c)
+        count_moves += 1
 
 def create_child(old_pos, new_pos):
     old_pos_row = old_pos[0]
@@ -104,6 +112,7 @@ def create_child(old_pos, new_pos):
     copy_board[new_pos_row][new_pos_col] = copy_board[old_pos_row][old_pos_col]
     copy_board[old_pos_row][old_pos_col] = temp_tile
 
+    return Node(copy_board)
 
     print("original board old loc")
     print(old_pos_row)

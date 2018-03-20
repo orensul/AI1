@@ -7,7 +7,8 @@ from WrongInput import WrongInput
 from Node import Node
 from TileEnum import TileEnum
 import copy
-
+import math
+import numpy
 
 NUMBER_OF_ROWS = 8
 ROW_LEN = 8
@@ -83,21 +84,82 @@ def main():
 
 def build_search_tree():
     node = Node(board)
+
+    print("root node: ")
+    print(node)
     for i in range(len(board)):
         for j in range(len(board)):
             if board[i][j] == TileEnum.WHITE_PIECE:
                 count, legal_new_pos = count_legal_moves_pos((i, j))
                 for new_pos in legal_new_pos:
-                    node.set_child(create_child((i, j), new_pos))
+                    child_node = create_child((i, j), new_pos)
+                    child_node.set_state_heuristic(1+calc_heuristic_for_board_state(create_board_state_node(child_node)))
+                    node.set_child(child_node)
+                    print(child_node)
 
-    print("root node: ")
-    print(node)
-    print("children: ")
-    count_moves = 1
-    for c in node.get_children():
-        print(str(count_moves))
-        print(c)
-        count_moves += 1
+
+
+
+
+def create_board_state_node(node):
+    board_state = []
+    for i in range(ROW_LEN):
+        row_list = []
+        for j in range(ROW_LEN):
+            row_list.append(0)
+        board_state.append(row_list)
+
+
+    for pos in node.get_white_loc():
+        i = pos[0]
+        j = pos[1]
+        board_state[i][j] = TileEnum.WHITE_PIECE
+
+    for pos in node.get_black_loc():
+        i = pos[0]
+        j = pos[1]
+        board_state[i][j] = TileEnum.BLACK_PIECE
+
+    board_state[0][0] = TileEnum.CORNER_TILE
+    board_state[0][ROW_LEN-1] = TileEnum.CORNER_TILE
+    board_state[ROW_LEN-1][0] = TileEnum.CORNER_TILE
+    board_state[ROW_LEN-1][ROW_LEN-1] = TileEnum.CORNER_TILE
+
+    for i in range(ROW_LEN):
+        for j in range(ROW_LEN):
+            if not board_state[i][j] in (TileEnum.WHITE_PIECE, TileEnum.BLACK_PIECE, TileEnum.CORNER_TILE):
+                board_state[i][j] = TileEnum.EMPTY_TILE
+
+
+    return board_state
+
+def get_list_black_pos(board_state):
+    black_pos = []
+    for i in range(len(board_state)):
+        for j in range(len(board_state)):
+            if board_state[i][j] == TileEnum.BLACK_PIECE:
+                black_pos.append((i, j))
+    return black_pos
+
+
+def calc_heuristic_for_board_state(board_state):
+    total_heuristic = 0
+    for i in range(len(board_state)):
+        for j in range(len(board_state)):
+            if board_state[i][j] == TileEnum.WHITE_PIECE:
+                min_manhattan_distance = ROW_LEN + ROW_LEN
+                for black_pos in get_list_black_pos(board_state):
+                    curr_distance = manhattan_distance((i, j), black_pos)
+                    if min_manhattan_distance >= curr_distance:
+                        min_manhattan_distance = curr_distance
+                total_heuristic += min_manhattan_distance
+    return total_heuristic
+
+
+
+def manhattan_distance(source_pos, dest_pos):
+    return math.fabs(source_pos[0] - dest_pos[0]) + math.fabs(source_pos[1] - dest_pos[1])
+
 
 def create_child(old_pos, new_pos):
     old_pos_row = old_pos[0]
@@ -114,23 +176,7 @@ def create_child(old_pos, new_pos):
 
     return Node(copy_board)
 
-    print("original board old loc")
-    print(old_pos_row)
-    print(old_pos_col)
-    print(board[old_pos_row][old_pos_col])
-    print("\n")
-    print("new board old loc")
-    print(copy_board[old_pos_row][old_pos_col])
-    print("\n")
 
-
-    print("original board new loc")
-    print(board[new_pos_row][new_pos_col])
-    print("\n")
-
-
-    print("mew board new loc")
-    print(copy_board[new_pos_row][new_pos_col])
 
 def count_moves():
     count_white_moves = 0

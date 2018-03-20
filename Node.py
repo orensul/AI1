@@ -1,5 +1,5 @@
-from PieceTile import PieceTile
 from TileEnum import TileEnum
+
 
 class Node:
     def __init__(self, board):

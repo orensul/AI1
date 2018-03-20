@@ -1,6 +1,4 @@
-from PieceTile import PieceTile
-from CornerTile import CornerTile
-from EmptyTile import EmptyTile
+
 from WrongNumberOfTilesException import WrongNumberOfTilesException
 from WrongSymbolException import WrongSymbolException
 from WrongInput import WrongInput
@@ -8,7 +6,6 @@ from Node import Node
 from TileEnum import TileEnum
 import copy
 import math
-import numpy
 
 NUMBER_OF_ROWS = 8
 ROW_LEN = 8

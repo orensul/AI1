@@ -1,13 +1,8 @@
-class Tile:
-    def __init__(self, location):
-        self._loc = location
+from enum import Enum
 
-    def __str__(self):
-        return '(' + str(self._loc[0]) + ", " + str(self._loc[1]) + ')'
 
-    def set_location(self, location):
-        self._loc = location
-
-    def get_location(self):
-        return self._loc
-
+class Tile(Enum):
+    WHITE_PIECE = 0
+    BLACK_PIECE = 1
+    EMPTY_TILE = 2
+    CORNER_TILE = 3

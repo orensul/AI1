@@ -47,11 +47,34 @@ class BoardState:
         # call to delete_surrounded should be here once it is implemented
         return BoardState(new_board)
 
+    def delete_black_piece(self, b_piece):
+        self._board[b_piece.get_row()][b_piece.get_column()] == TileEnum.EMPTY_TILE
+        self._black_pieces_loc.remove(b_piece)
+
     def delete_surrounded(self):
-        pass
+        for b_piece in self._black_pieces_loc:
+            if b_piece.get_row() == 0 or b_piece.get_row() == len(self._board) - 1:
+                if self._board[b_piece.get_row()][b_piece.get_column() - 1] \
+                        in(TileEnum.WHITE_PIECE, TileEnum.CORNER_TILE) and \
+                        self._board[b_piece.get_row()][b_piece.get_column() + 1] \
+                        in(TileEnum.WHITE_PIECE, TileEnum.CORNER_TILE):
+                    self.delete_black_piece(b_piece)
+            elif b_piece.get_column() == 0 or b_piece.get_column() == len(self._board) - 1:
+                if self._board[b_piece.get_row() - 1][b_piece.get_column()] \
+                    in(TileEnum.WHITE_PIECE, TileEnum.CORNER_TILE) and \
+                    self._board[b_piece.get_row() + 1][b_piece.get_column()] \
+                        in(TileEnum.WHITE_PIECE, TileEnum.CORNER_TILE):
+                    self.delete_black_piece(b_piece)
+            else:
+                if (self._board[b_piece.get_row()][b_piece.get_column() - 1] == TileEnum.WHITE_PIECE and \
+                    self._board[b_piece.get_row()][b_piece.get_column() + 1] == TileEnum.WHITE_PIECE) \
+                    or (self._board[b_piece.get_row() - 1][b_piece.get_column()] == TileEnum.WHITE_PIECE and \
+                        self._board[b_piece.get_row() + 1][b_piece.get_column()] == TileEnum.WHITE_PIECE):
+                    self.delete_black_piece(b_piece)
 
     def is_goal(self):
-        pass
+        return len(self._black_pieces_loc) == 0
+
 
     def sum_man_distance(self):
         """

@@ -15,8 +15,14 @@ class Node:
         # Move that translates parent node state to this current node state. Useful in output of massacre method.
         self._move = move
 
+    def get_board(self):
+        return self._board
+
     def get_children(self):
         return self._children
+
+    def get_total_cost(self):
+        return self._cost_so_far+self._est_cost_to_goal
 
     def expand_white_moves(self):
         white_moves = self._board.get_white_moves()
@@ -32,5 +38,4 @@ class Node:
         message += ' Node black pieces location: '
         for loc in self._board.get_black_pieces_loc():
             message += str(loc)
-        message += ' node heuristic: ' + str(self._est_cost_to_goal)
         return message

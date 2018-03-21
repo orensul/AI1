@@ -43,20 +43,23 @@ def a_star_search(start):
     board_max_man_dist = 2 * BOARD_SIZE * len(start.get_board().get_white_pieces_loc())
 
     print(str(start))
-    start.expand_white_moves()
-    count_child = 1
-    for node in start.get_children():
-        print(str(count_child), str(node), board_max_man_dist-node.get_total_cost())
-        count_child += 1
-#    frontier=PriorityQueue()
-#    frontier.put((0,start))
-#    while not frontier.empty():
-#        current=frontier.get()
-#        if(current[1].board.is_goal()):      ##isgoal needs implementation
-            ###game is won. Break, backtrack and print.
-#        current.expand_white_moves(current[2].board.get_white_moves())  #expand tree to include children of current node representing board configurations after all possible white moves
-#        for child in current.get_children():
-#            frontier.put((child.cost_so_far+child.est_cost,child))  #add these children into the priority queue using internal heuristic man_distance value
+    #start.expand_white_moves()
+   # count_child = 1
+  #  for node in start.get_children():
+ #       print(str(count_child), str(node), board_max_man_dist-node.get_total_cost())
+ #       count_child += 1
+    frontier = PriorityQueue()
+    frontier.put((0, start))
+    while not frontier.empty():
+        current = frontier.get()
+        print("yyyy")
+        print("hi node " + str(current[1]))
+        if current[1].get_board().is_goal():
+           print('GOAL')
+           break
+        current[1].expand_white_moves()  #expand tree to include children of current node representing board configurations after all possible white moves
+        for child in current[1].get_children():
+            frontier.put((board_max_man_dist - child.get_total_cost(), child))  #add these children into the priority queue using internal heuristic man_distance value
 
 
 def getBoardInput():

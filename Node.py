@@ -21,15 +21,27 @@ class Node:
     def get_children(self):
         return self._children
 
+    def get_parent(self):
+        return self._parent
+
+    def get_move(self):
+        return self._move
+
     def get_total_cost(self):
-        return self._cost_so_far+self._est_cost_to_goal
+        return self._cost_so_far + self._est_cost_to_goal
+
+    def is_nodes_same(self, other_node):
+        return self._board.is_board_states_same(other_node.get_board())
 
     def expand_white_moves(self):
         white_moves = self._board.get_white_moves()
         for move in white_moves:
             new_board_state = self._board.update(move)
+            new_board_state.delete_white_surrounded()
+            new_board_state.delete_black_surrounded()
+
             # each move is a cost of 1 so each child node has a cost_so_far 1 more than their parent
-            self._children.append(Node(new_board_state, self._board, move, self._cost_so_far + 1))
+            self._children.append(Node(new_board_state, self, move, self._cost_so_far + 1))
 
     def __str__(self):
         message = 'Node white pieces location: '
@@ -38,4 +50,5 @@ class Node:
         message += ' Node black pieces location: '
         for loc in self._board.get_black_pieces_loc():
             message += str(loc)
+        message += ' priority: ' + str(self.get_total_cost())
         return message

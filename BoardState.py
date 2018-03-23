@@ -21,6 +21,17 @@ class BoardState:
                 if board[i][j] == TileEnum.BLACK_PIECE:
                     self._black_pieces_loc.append(Coordinate(i, j))
 
+    def is_board_states_same(self, other_board_state):
+
+        for i in range(len(self._board)):
+            for j in range(len(self._board)):
+                if not self._board[i][j] == other_board_state.get_board()[i][j]:
+                    return False
+        return True
+
+    def get_board(self):
+        return self._board
+
     def get_white_pieces_loc(self):
         return self._white_pieces_loc
 
@@ -44,33 +55,66 @@ class BoardState:
         new_board[original_loc_row][original_loc_col] = new_board[new_loc_row][new_loc_col]
         new_board[new_loc_row][new_loc_col] = temp_tile
 
-        # call to delete_surrounded should be here once it is implemented
         return BoardState(new_board)
 
-    def delete_black_piece(self, b_piece):
-        self._board[b_piece.get_row()][b_piece.get_column()] == TileEnum.EMPTY_TILE
-        self._black_pieces_loc.remove(b_piece)
+    def delete_black_piece(self, delete_black_piece_loc):
+        for b_piece in delete_black_piece_loc:
+            self._board[b_piece.get_row()][b_piece.get_column()] = TileEnum.EMPTY_TILE
+            self._black_pieces_loc.remove(b_piece)
 
-    def delete_surrounded(self):
+
+    def delete_white_piece(self, delete_white_piece_loc):
+        for w_piece in delete_white_piece_loc:
+            self._board[w_piece.get_row()][w_piece.get_column()] = TileEnum.EMPTY_TILE
+            self._white_pieces_loc.remove(w_piece)
+
+
+    def delete_white_surrounded(self):
+        delete_white_piece_loc = []
+        for w_piece in self._white_pieces_loc:
+            if w_piece.get_row() == 0 or w_piece.get_row() == len(self._board) - 1:
+                if self._board[w_piece.get_row()][w_piece.get_column() - 1] \
+                        in (TileEnum.BLACK_PIECE, TileEnum.CORNER_TILE) and \
+                        self._board[w_piece.get_row()][w_piece.get_column() + 1] \
+                        in (TileEnum.BLACK_PIECE, TileEnum.CORNER_TILE):
+                    delete_white_piece_loc.append(w_piece)
+            elif w_piece.get_column() == 0 or w_piece.get_column() == len(self._board) - 1:
+                if self._board[w_piece.get_row() - 1][w_piece.get_column()] \
+                        in (TileEnum.BLACK_PIECE, TileEnum.CORNER_TILE) and \
+                        self._board[w_piece.get_row() + 1][w_piece.get_column()] \
+                        in (TileEnum.BLACK_PIECE, TileEnum.CORNER_TILE):
+                    delete_white_piece_loc.append(w_piece)
+            else:
+                if (self._board[w_piece.get_row()][w_piece.get_column() - 1] == TileEnum.BLACK_PIECE and \
+                    self._board[w_piece.get_row()][w_piece.get_column() + 1] == TileEnum.BLACK_PIECE) \
+                        or (self._board[w_piece.get_row() - 1][w_piece.get_column()] == TileEnum.BLACK_PIECE and \
+                            self._board[w_piece.get_row() + 1][w_piece.get_column()] == TileEnum.BLACK_PIECE):
+                    delete_white_piece_loc.append(w_piece)
+        self.delete_white_piece(delete_white_piece_loc)
+
+    def delete_black_surrounded(self):
+        delete_black_piece_loc = []
         for b_piece in self._black_pieces_loc:
             if b_piece.get_row() == 0 or b_piece.get_row() == len(self._board) - 1:
                 if self._board[b_piece.get_row()][b_piece.get_column() - 1] \
                         in(TileEnum.WHITE_PIECE, TileEnum.CORNER_TILE) and \
                         self._board[b_piece.get_row()][b_piece.get_column() + 1] \
                         in(TileEnum.WHITE_PIECE, TileEnum.CORNER_TILE):
-                    self.delete_black_piece(b_piece)
+                    delete_black_piece_loc.append(b_piece)
             elif b_piece.get_column() == 0 or b_piece.get_column() == len(self._board) - 1:
                 if self._board[b_piece.get_row() - 1][b_piece.get_column()] \
                     in(TileEnum.WHITE_PIECE, TileEnum.CORNER_TILE) and \
                     self._board[b_piece.get_row() + 1][b_piece.get_column()] \
                         in(TileEnum.WHITE_PIECE, TileEnum.CORNER_TILE):
-                    self.delete_black_piece(b_piece)
+                    delete_black_piece_loc.append(b_piece)
             else:
                 if (self._board[b_piece.get_row()][b_piece.get_column() - 1] == TileEnum.WHITE_PIECE and \
                     self._board[b_piece.get_row()][b_piece.get_column() + 1] == TileEnum.WHITE_PIECE) \
                     or (self._board[b_piece.get_row() - 1][b_piece.get_column()] == TileEnum.WHITE_PIECE and \
                         self._board[b_piece.get_row() + 1][b_piece.get_column()] == TileEnum.WHITE_PIECE):
-                    self.delete_black_piece(b_piece)
+                    delete_black_piece_loc.append(b_piece)
+        self.delete_black_piece(delete_black_piece_loc)
+
 
     def is_goal(self):
         return len(self._black_pieces_loc) == 0
@@ -83,14 +127,15 @@ class BoardState:
         :return:
         """
         total_man_dist = 0
-        for w_piece in self._white_pieces_loc:
-            min_man_dist = 2 * len(self._board)
-            for b_piece in self._black_pieces_loc:
-                d = self.man_distance(w_piece, b_piece)
-                if d < min_man_dist:
-                    min_man_dist = d
-            total_man_dist += min_man_dist
-        return total_man_dist
+        for b_piece in self._black_pieces_loc:
+            count_w_pieces = 1
+            avg = 0
+            for w_piece in self._white_pieces_loc:
+                avg += self.man_distance(b_piece, w_piece) - 1
+                count_w_pieces += 1
+            avg /= count_w_pieces
+            total_man_dist += avg
+        return total_man_dist*2
 
     @staticmethod
     def man_distance(coord_white, coord_black):
@@ -203,8 +248,8 @@ class BoardState:
                 down_move = Move(row, col, row + 1, col)
                 return down_move
 
-            elif self._board[row+1][col] in (TileEnum.BLACK_PIECE, TileEnum.WHITE_PIECE):
+            elif self._board[row + 1][col] in (TileEnum.BLACK_PIECE, TileEnum.WHITE_PIECE):
                 if row + 1 < len(self._board) - 1:
                     if self._board[row + 2][col] == TileEnum.EMPTY_TILE:
-                        down_move = Move(row, col, row, col + 2)
+                        down_move = Move(row, col, row + 2, col)
                         return down_move

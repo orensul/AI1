@@ -17,5 +17,5 @@ class Move:
         return self._end
 
     def __str__(self):
-        message='From: '+str(self._begin)+' to '+str(self._end)
+        message = str(self._begin) + '->' + str(self._end)
         return message

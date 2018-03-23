@@ -1,6 +1,10 @@
 
 
 class Node:
+    """
+    This class of Node contains the information of node in the search tree.
+    each node contains board_state, his parent, children and of course the heuristic cost.
+    """
     def __init__(self, board_state, parent, move, cost):
         # current state of the board this node represents
         self._board = board_state
@@ -34,6 +38,11 @@ class Node:
         return self._board.is_board_states_same(other_node.get_board())
 
     def expand_white_moves(self):
+        """
+        Set the children attribute of the class all of the children of this node according to the optional new moves
+        we can take, each new move will produce a new node which is a new board state.
+        :return:
+        """
         white_moves = self._board.get_white_moves()
         for move in white_moves:
             new_board_state = self._board.update(move)
@@ -44,6 +53,10 @@ class Node:
             self._children.append(Node(new_board_state, self, move, self._cost_so_far + 1))
 
     def __str__(self):
+        """
+        toString for Node class
+        :return: string representation of Node
+        """
         message = 'Node white pieces location: '
         for loc in self._board.get_white_pieces_loc():
             message += str(loc)

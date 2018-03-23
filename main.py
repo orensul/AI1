@@ -2,11 +2,8 @@ from WrongNumberOfTilesException import WrongNumberOfTilesException
 from WrongSymbolException import WrongSymbolException
 from WrongInput import WrongInput
 from BoardState import BoardState
-from Coordinate import Coordinate
-from Move import Move
 from Node import Node
 from TileEnum import TileEnum
-import copy
 from queue import PriorityQueue
 
 BOARD_SIZE = 8
@@ -15,7 +12,6 @@ BLACK_PIECE_SYM = '@'
 CORNER_SYM = 'X'
 EMPTY_SYM = '-'
 SPACE = ' '
-
 NODE_IDX = 2
 PRIO_IDX = 0
 
@@ -41,15 +37,15 @@ def main():
     except WrongInput:
         print("Wrong input")
 
-def a_star_search(start):
 
+def a_star_search(start):
+    """
+    Implementing the A* by using priority queue.
+    :param start: start node
+    :return:
+    """
+    # holds visited nodes so we will know to skip them if we will encounter them again
     visited_nodes = []
-    # print(str(start))
-    # start.expand_white_moves()
-    # count_child = 1
-    # for node in start.get_children():
-    #     print(str(count_child), str(node), node.get_total_cost())
-    #     count_child += 1
 
     leaves = PriorityQueue()
     leaves.put((0, 0, start))
@@ -57,16 +53,13 @@ def a_star_search(start):
     count_nodes = 0
     while not leaves.empty():
         current = leaves.get()
-
-        print("black pieces")
-        print(len(current[NODE_IDX].get_board().get_black_pieces_loc()))
+        # if we arrived to the goal, we will backtracking on the tree to print all of the moves we made
         if current[NODE_IDX].get_board().is_goal():
             sequence = []
             traceback = current[NODE_IDX]
             while not traceback.get_parent() is None:
                 sequence.append(traceback.get_move())
                 traceback = traceback.get_parent()
-            print("list")
             for move in sequence[::-1]:
                 print(str(move))
             return 0
@@ -80,8 +73,6 @@ def a_star_search(start):
                 count_nodes += 1
                 # add these children into the priority queue using internal heuristic man_distance value
                 leaves.put((child.get_total_cost(), count_nodes, child))
-                print(child)
-        #print(leaves.qsize())
 
 
 def is_already_visited(visited_nodes, current_node):
@@ -93,7 +84,8 @@ def is_already_visited(visited_nodes, current_node):
 def getBoardInput():
     try:
         board = []
-        debug = 1
+        # debug = 0 means input from user, debug = 1 means our manual input
+        debug = 0
         for i in range(BOARD_SIZE):
             row = []
             counter_of_tiles_in_row = 0
@@ -105,22 +97,23 @@ def getBoardInput():
                 elif i == 2:
                     row_input = '- - - - - - - -'
                 elif i == 3:
-                    row_input = '- - - 0 - 0 - -'
+                    row_input = '- - - O @ O - -'
                 elif i == 4:
                     row_input = '- - - - - - - -'
                 elif i == 5:
-                    row_input = '- - - - 0 - - -'
+                    row_input = '- - - - - O @ O'
                 elif i == 6:
-                    row_input = '- - - - - - - -'
+                    row_input = '- - - - - - - @'
                 else:
-                    row_input = 'X - - - 0 - - X'
-
+                    row_input = 'X - - - - - - X'
             else:
                 row_input = input('row no. ' + str(i) + ' : please write a text of row of ' + str(
                     BOARD_SIZE) + ' tiles which contains only - O X @ :')
             if len(row_input) < BOARD_SIZE:
                 raise WrongNumberOfTilesException
+                exit()
             else:
+                # it's good row input regarding the size, now initialize the board with the input symbols.
                 for tile in row_input:
                     if tile == WHITE_PIECE_SYM:
                         row.append(TileEnum.WHITE_PIECE)
@@ -140,8 +133,10 @@ def getBoardInput():
 
     except WrongNumberOfTilesException:
         print("Wrong number of tiles, you should supply " + str(BOARD_SIZE) + ' tiles')
+        exit()
     except WrongSymbolException:
         print("Wrong symbol of a tile, you should supply only one of these: X - O @")
+        exit()
 
 
 main()

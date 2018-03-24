@@ -14,5 +14,5 @@ class Coordinate:
         return self._column
 
     def __str__(self):
-        message = '(' + str(self._column) + ',' + str(self._row) + ')'
+        message = '(' + str(self._column) + ', ' + str(self._row) + ')'
         return message

@@ -1,2 +1,0 @@
-class WrongInput(Exception):
-    pass

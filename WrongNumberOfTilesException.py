@@ -1,2 +1,0 @@
-class WrongNumberOfTilesException(Exception):
-    pass

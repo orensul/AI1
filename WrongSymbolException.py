@@ -1,2 +1,0 @@
-class WrongSymbolException(Exception):
-    pass
